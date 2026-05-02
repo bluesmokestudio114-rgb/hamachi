@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hamachi Being Hamachi 🐾</title>
+  <meta name="description" content="Daily chaotic dog moments with Hamachi, Salmon & Otoro — 3 troublemakers with 0 brain cells 😅" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM
+    ============================================================ */
+    :root {
+      --cream:    #FBF7F2;
+      --warm:     #F5EDE0;
+      --biscuit:  #E8D5BC;
+      --caramel:  #C9975B;
+      --cocoa:    #7A4E2D;
+      --dark:     #2E1A0E;
+      --white:    #FFFFFF;
+      --shadow-soft: 0 8px 32px rgba(122, 78, 45, 0.10);
+      --shadow-lift: 0 20px 60px rgba(122, 78, 45, 0.16);
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 32px;
+      --radius-xl: 48px;
+      --font-display: 'Playfair Display', serif;
+      --font-body:    'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       NOISE TEXTURE OVERLAY (subtle warmth)
+    ============================================================ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ============================================================
+       SCROLL ANIMATION SETUP
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       NAV
+    ============================================================ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(251, 247, 242, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(201, 151, 91, 0.12);
+      transition: padding 0.3s ease, box-shadow 0.3s ease;
+    }
+    nav.scrolled {
+      padding: 14px 48px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--cocoa);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--caramel); }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cocoa);
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--caramel); }
+
+    .nav-cta {
+      background: var(--caramel);
+      color: var(--white) !important;
+      opacity: 1 !important;
+      padding: 10px 22px;
+      border-radius: 50px;
+      font-weight: 600 !important;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s !important;
+    }
+    .nav-cta:hover {
+      background: var(--cocoa) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(122, 78, 45, 0.25);
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--cocoa);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(251, 247, 242, 0.97);
+      backdrop-filter: blur(20px);
+      z-index: 99;
+      padding: 24px 32px 32px;
+      flex-direction: column;
+      gap: 20px;
+      border-bottom: 1px solid var(--biscuit);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--cocoa);
+      text-decoration: none;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--biscuit);
+    }
+    .mobile-menu a:last-child {
+      border: none;
+      background: var(--caramel);
+      color: var(--white);
+      text-align: center;
+      border-radius: 50px;
+      padding: 14px;
+      margin-top: 8px;
+    }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 120px 48px 80px;
+      gap: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative blobs */
+    #hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,151,91,0.12) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      pointer-events: none;
+    }
+    #hero::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,213,188,0.4) 0%, transparent 70%);
+      bottom: 0; left: -50px;
+      pointer-events: none;
+    }
+
+    .hero-text { position: relative; z-index: 2; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--warm);
+      border: 1px solid var(--biscuit);
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--caramel);
+      margin-bottom: 28px;
+      animation: fadeSlideIn 0.8s ease both;
+    }
+    .hero-badge .dot {
+      width: 7px; height: 7px;
+      background: var(--caramel);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.5); opacity: 0.6; }
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 5.5vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.04;
+      letter-spacing: -2px;
+      color: var(--dark);
+      margin-bottom: 24px;
+      animation: fadeSlideIn 0.8s 0.1s ease both;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--caramel);
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--cocoa);
+      opacity: 0.8;
+      max-width: 420px;
+      margin-bottom: 40px;
+      animation: fadeSlideIn 0.8s 0.2s ease both;
+    }
+
+    .hero-dogs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 40px;
+      animation: fadeSlideIn 0.8s 0.3s ease both;
+    }
+    .dog-tag {
+      background: var(--white);
+      border: 1.5px solid var(--biscuit);
+      border-radius: 50px;
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cocoa);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeSlideIn 0.8s 0.4s ease both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--caramel);
+      color: var(--white);
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 24px rgba(201, 151, 91, 0.35);
+    }
+    .btn-primary:hover {
+      background: var(--cocoa);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(122, 78, 45, 0.3);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      color: var(--cocoa);
+      text-decoration: none;
+      padding: 16px 28px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 2px solid var(--biscuit);
+      transition: border-color 0.2s, transform 0.2s, background 0.2s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--caramel);
+      background: var(--warm);
+      transform: translateY(-3px);
+    }
+
+    /* Hero image side */
+    .hero-visual {
+      position: relative;
+      z-index: 2;
+      animation: fadeSlideIn 0.9s 0.2s ease both;
+    }
+
+    .hero-card-main {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-lift);
+      position: relative;
+      aspect-ratio: 4/5;
+    }
+
+    .hero-placeholder-img {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-placeholder-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      transition: transform 0.6s ease;
+    }
+    .hero-card-main:hover .hero-placeholder-img img {
+      transform: scale(1.04);
+    }
+
+    /* Floating stat cards */
+    .stat-card {
+      position: absolute;
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      box-shadow: var(--shadow-lift);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .stat-card.left {
+      bottom: 80px;
+      left: -40px;
+    }
+    .stat-card.top {
+      top: 40px;
+      right: -30px;
+    }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--dark);
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--cocoa);
+      opacity: 0.7;
+      font-weight: 500;
+    }
+    .stat-icon { font-size: 1.6rem; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       SECTION SHARED
+    ============================================================ */
+    section {
+      padding: 100px 48px;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--caramel);
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      color: var(--dark);
+      margin-bottom: 16px;
+    }
+    .section-title em {
+      font-style: italic;
+      color: var(--caramel);
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--cocoa);
+      opacity: 0.75;
+      max-width: 540px;
+    }
+
+    /* ============================================================
+       MEET THE TRIO
+    ============================================================ */
+    #trio {
+      background: var(--white);
+    }
+
+    .trio-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .trio-header .section-sub { margin: 0 auto; }
+
+    .trio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .trio-card {
+      text-align: center;
+      padding: 40px 28px;
+      border-radius: var(--radius-lg);
+      background: var(--cream);
+      border: 1.5px solid var(--biscuit);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      cursor: default;
+    }
+    .trio-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lift);
+      border-color: var(--caramel);
+    }
+
+    .trio-avatar {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .trio-card:hover .trio-avatar { transform: scale(1.1) rotate(-5deg); }
+
+    .trio-name {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .trio-role {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--caramel);
+      margin-bottom: 14px;
+    }
+    .trio-desc {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: var(--cocoa);
+      opacity: 0.8;
+    }
+
+    /* ============================================================
+       VIDEOS
+    ============================================================ */
+    #videos {
+      background: var(--cream);
+    }
+
+    .videos-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 52px;
+      gap: 24px;
+    }
+
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .video-card {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--white);
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .video-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .video-card iframe {
+      width: 100%;
+      aspect-ratio: 9/16;
+      display: block;
+      border: none;
+    }
+
+    .video-label {
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--cocoa);
+      border-top: 1px solid var(--biscuit);
+    }
+
+    /* ============================================================
+       ABOUT
+    ============================================================ */
+    #about {
+      background: var(--warm);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-visual {
+      position: relative;
+    }
+
+    .about-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-lift);
+      text-align: center;
+    }
+    .about-dog-photo {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      object-position: center 25%;
+      display: block;
+    }
+    .about-card-body {
+      padding: 32px 40px 40px;
+    }
+    .about-card-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--dark);
+      margin-bottom: 10px;
+    }
+    .about-card-sub {
+      font-size: 0.9rem;
+      color: var(--cocoa);
+      opacity: 0.7;
+      line-height: 1.6;
+    }
+
+    /* Floating tag */
+    .about-tag {
+      position: absolute;
+      background: var(--caramel);
+      color: var(--white);
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      bottom: -20px;
+      right: 20px;
+      box-shadow: 0 8px 24px rgba(201, 151, 91, 0.4);
+    }
+
+    .about-text .section-sub {
+      margin-bottom: 28px;
+      max-width: none;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .about-stat {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 24px 16px;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+    }
+    .about-stat-num {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--caramel);
+      margin-bottom: 4px;
+    }
+    .about-stat-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--cocoa);
+      opacity: 0.7;
+    }
+
+    /* ============================================================
+       GALLERY (masonry-feel)
+    ============================================================ */
+    #gallery {
+      background: var(--white);
+    }
+
+    .gallery-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 200px;
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .gallery-item {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+    .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+    .gallery-item:nth-child(4) { grid-column: span 2; }
+    .gallery-item:nth-child(7) { grid-column: span 2; grid-row: span 2; }
+
+    .gallery-inner {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--warm), var(--biscuit));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      transition: transform 0.4s ease;
+      position: relative;
+    }
+    .gallery-item:hover .gallery-inner { transform: scale(1.06); }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(46,26,14,0.5) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+    .gallery-caption {
+      color: var(--white);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Different bg colors for variety */
+    .gallery-item:nth-child(2) .gallery-inner { background: linear-gradient(135deg, #FDEBD0, #F0C99A); }
+    .gallery-item:nth-child(3) .gallery-inner { background: linear-gradient(135deg, #F9E4C8, var(--biscuit)); }
+    .gallery-item:nth-child(4) .gallery-inner { background: linear-gradient(135deg, var(--biscuit), #D4A574); }
+    .gallery-item:nth-child(5) .gallery-inner { background: linear-gradient(135deg, #FCF0E4, #E8CBA5); }
+    .gallery-item:nth-child(6) .gallery-inner { background: linear-gradient(135deg, #F5D9B7, var(--caramel)); }
+    .gallery-item:nth-child(7) .gallery-inner { background: linear-gradient(135deg, #FBE8D0, #C9875B); }
+    .gallery-item:nth-child(8) .gallery-inner { background: linear-gradient(135deg, var(--warm), #DEB887); }
+
+    /* ============================================================
+       SOCIAL STRIP
+    ============================================================ */
+    #social {
+      background: var(--cream);
+      padding: 60px 48px;
+    }
+
+    .social-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .social-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+    }
+    .social-pill:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    }
+    .social-pill.yt  { background: #FF0000; color: white; }
+    .social-pill.ig  { background: linear-gradient(135deg, #833AB4, #FD1D1D, #F77737); color: white; }
+    .social-pill.tt  { background: var(--dark); color: white; }
+
+    .social-pill svg { width: 20px; height: 20px; fill: currentColor; }
+
+    /* ============================================================
+       SUBSCRIBE CTA
+    ============================================================ */
+    #subscribe {
+      background: var(--dark);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #subscribe::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,151,91,0.15) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .sub-emoji { font-size: 5rem; margin-bottom: 24px; display: block; position: relative; z-index: 1; }
+    .sub-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      color: var(--white);
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .sub-title em { color: var(--caramel); font-style: italic; }
+    .sub-desc {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.6);
+      max-width: 460px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+    .sub-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-white {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--white);
+      color: var(--dark);
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .btn-white:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      background: var(--caramel);
+      color: var(--white);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      color: var(--white);
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 2px solid rgba(255,255,255,0.25);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-3px);
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--dark);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--white);
+      opacity: 0.7;
+    }
+    .footer-logo span { color: var(--caramel); opacity: 1; }
+
+    .footer-copy {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--caramel); }
+
+    /* ============================================================
+       MARQUEE / CHAOS TAPE
+    ============================================================ */
+    .marquee-wrap {
+      background: var(--caramel);
+      overflow: hidden;
+      padding: 14px 0;
+    }
+    .marquee-track {
+      display: flex;
+      gap: 0;
+      animation: marquee 18s linear infinite;
+      width: max-content;
+    }
+    .marquee-item {
+      white-space: nowrap;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white);
+      padding: 0 28px;
+    }
+    .marquee-item .sep { opacity: 0.5; margin-left: 28px; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 1024px) {
+      nav { padding: 18px 32px; }
+      nav.scrolled { padding: 12px 32px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+
+      #hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 100px 32px 60px;
+      }
+      .hero-dogs { justify-content: center; }
+      .hero-desc { margin: 0 auto 40px; }
+      .hero-actions { justify-content: center; }
+      .hero-visual { max-width: 400px; margin: 0 auto; }
+      .stat-card.left { left: -10px; }
+      .stat-card.top  { right: -10px; }
+
+      .trio-grid { grid-template-columns: repeat(3, 1fr); }
+
+      .videos-grid { grid-template-columns: repeat(2, 1fr); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      .about-visual { max-width: 400px; margin: 0 auto; }
+
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-item:nth-child(1) { grid-column: span 2; }
+      .gallery-item:nth-child(4) { grid-column: span 1; }
+      .gallery-item:nth-child(7) { grid-column: span 2; }
+
+      section { padding: 80px 32px; }
+      footer  { padding: 32px; flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 640px) {
+      #hero { padding: 90px 20px 60px; }
+      section { padding: 64px 20px; }
+      nav { padding: 16px 20px; }
+      footer { padding: 24px 20px; }
+      #social { padding: 48px 20px; }
+
+      .trio-grid { grid-template-columns: 1fr; }
+      .videos-grid { grid-template-columns: 1fr; }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: 150px;
+      }
+      .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+      .gallery-item:nth-child(4) { grid-column: span 2; }
+      .gallery-item:nth-child(7) { grid-column: span 2; grid-row: span 1; }
+
+      .about-stats { grid-template-columns: repeat(3, 1fr); }
+      .hero-title { letter-spacing: -1px; }
+      .stat-card.left { display: none; }
+      .stat-card.top  { display: none; }
+      .sub-actions { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       NAV
+  ============================================================ -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">Hamachi<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#trio">The Trio</a></li>
+      <li><a href="#videos">Videos</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="https://www.youtube.com/@hamachichaos?sub_confirmation=1" target="_blank" class="nav-cta">Subscribe 🐾</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#trio" onclick="closeMobile()">The Trio</a>
+    <a href="#videos" onclick="closeMobile()">Videos</a>
+    <a href="#about" onclick="closeMobile()">About</a>
+    <a href="#gallery" onclick="closeMobile()">Gallery</a>
+    <a href="https://www.youtube.com/@hamachichaos?sub_confirmation=1" target="_blank">Subscribe on YouTube 🐾</a>
+  </div>
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section id="hero">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Daily Dog Chaos
+      </div>
+      <h1 class="hero-title">
+        Being<br><em>Hamachi</em><br>is chaos.
+      </h1>
+      <p class="hero-desc">
+        Meet Hamachi, Salmon & Otoro — 3 dogs, 0 brain cells, and infinite daily chaos. Welcome to the most lovably unhinged dog channel on the internet.
+      </p>
+      <div class="hero-dogs">
+        <div class="dog-tag">🐶 Hamachi</div>
+        <div class="dog-tag">🐾 Salmon</div>
+        <div class="dog-tag">🍣 Otoro</div>
+      </div>
+      <div class="hero-actions">
+        <a href="https://www.youtube.com/@hamachichaos?sub_confirmation=1" target="_blank" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+          Subscribe Free
+        </a>
+        <a href="#videos" class="btn-secondary">
+          Watch Now ↓
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card-main">
+        <div class="hero-placeholder-img">
+          <img src="hamachi.jpg" alt="Hamachi the fluffy white Pomeranian puppy" />
+        </div>
+      </div>
+      <div class="stat-card top">
+        <span class="stat-icon">🔥</span>
+        <div>
+          <div class="stat-num">Daily</div>
+          <div class="stat-label">New Shorts</div>
+        </div>
+      </div>
+      <div class="stat-card left">
+        <span class="stat-icon">🐶</span>
+        <div>
+          <div class="stat-num">3 Dogs</div>
+          <div class="stat-label">0 Brain Cells</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       MARQUEE
+  ============================================================ -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <!-- doubled for seamless loop -->
+      <span class="marquee-item">🐶 Hamachi Being Hamachi <span class="sep">✦</span></span>
+      <span class="marquee-item">Pure Chaos Daily <span class="sep">✦</span></span>
+      <span class="marquee-item">🍣 Salmon & Otoro <span class="sep">✦</span></span>
+      <span class="marquee-item">No Logic. No Peace. <span class="sep">✦</span></span>
+      <span class="marquee-item">🐾 Subscribe Now <span class="sep">✦</span></span>
+      <span class="marquee-item">Dog Life is the Best Life <span class="sep">✦</span></span>
+      <span class="marquee-item">🐶 Hamachi Being Hamachi <span class="sep">✦</span></span>
+      <span class="marquee-item">Pure Chaos Daily <span class="sep">✦</span></span>
+      <span class="marquee-item">🍣 Salmon & Otoro <span class="sep">✦</span></span>
+      <span class="marquee-item">No Logic. No Peace. <span class="sep">✦</span></span>
+      <span class="marquee-item">🐾 Subscribe Now <span class="sep">✦</span></span>
+      <span class="marquee-item">Dog Life is the Best Life <span class="sep">✦</span></span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MEET THE TRIO
+  ============================================================ -->
+  <section id="trio">
+    <div class="trio-header reveal">
+      <div class="section-label">The Stars of the Show</div>
+      <h2 class="section-title">Meet <em>The Trio</em></h2>
+      <p class="section-sub">Three dogs. Three personalities. One household that's barely holding it together.</p>
+    </div>
+    <div class="trio-grid">
+      <div class="trio-card reveal">
+        <span class="trio-avatar">🐶</span>
+        <div class="trio-name">Hamachi</div>
+        <div class="trio-role">The Main Character</div>
+        <p class="trio-desc">The chaos instigator. Nothing happens without Hamachi starting it. Absolutely zero self-awareness, maximum confidence.</p>
+      </div>
+      <div class="trio-card reveal" style="transition-delay:0.1s">
+        <span class="trio-avatar">🍣</span>
+        <div class="trio-name">Salmon</div>
+        <div class="trio-role">The Sidekick</div>
+        <p class="trio-desc">Follows Hamachi everywhere and copies every bad idea. Somehow always looks surprised when things go wrong.</p>
+      </div>
+      <div class="trio-card reveal" style="transition-delay:0.2s">
+        <span class="trio-avatar">🐾</span>
+        <div class="trio-name">Otoro</div>
+        <div class="trio-role">The Observer</div>
+        <p class="trio-desc">Watches the other two with silent judgment. Occasionally joins in, but only for maximum impact at the worst moment.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       VIDEOS
+  ============================================================ -->
+  <section id="videos">
+    <div class="videos-header">
+      <div>
+        <div class="section-label reveal">Latest Chaos</div>
+        <h2 class="section-title reveal">Watch <em>& Laugh</em></h2>
+        <p class="section-sub reveal">Fresh Shorts dropped daily. Warning: extremely relatable dog content.</p>
+      </div>
+      <a href="https://www.youtube.com/@hamachichaos" target="_blank" class="btn-primary reveal" style="flex-shrink:0; white-space:nowrap;">
+        All Videos →
+      </a>
+    </div>
+
+    <div class="videos-grid">
+      <!-- Replace VIDEO_ID_1, VIDEO_ID_2, VIDEO_ID_3 with real Short IDs -->
+      <div class="video-card reveal">
+        <iframe
+          src="https://www.youtube.com/embed/owfEY461skM"
+          title="Hamachi Video 1"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+        <div class="video-label">🔥 Latest Drop</div>
+      </div>
+      <div class="video-card reveal" style="transition-delay:0.1s">
+        <iframe
+          src="https://www.youtube.com/embed/owfEY461skM"
+          title="Hamachi Video 2"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+        <div class="video-label">😂 Too Relatable</div>
+      </div>
+      <div class="video-card reveal" style="transition-delay:0.2s">
+        <iframe
+          src="https://www.youtube.com/embed/owfEY461skM"
+          title="Hamachi Video 3"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+        <div class="video-label">🐾 Fan Favourite</div>
+      </div>
+    </div>
+
+    <!-- 
+      💡 HOW TO ADD SPECIFIC VIDEOS:
+      Replace the src with:
+      https://www.youtube.com/embed/VIDEO_ID
+      e.g. https://www.youtube.com/embed/dQw4w9WgXcQ
+    -->
+  </section>
+
+  <!-- ============================================================
+       ABOUT
+  ============================================================ -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-visual reveal">
+        <div class="about-card">
+          <img src="hamachi.jpg" alt="Hamachi the Pomeranian" class="about-dog-photo" />
+          <div class="about-card-body">
+            <div class="about-card-title">Hamachi 🐾</div>
+            <p class="about-card-sub">The fluffiest chaos agent you'll ever meet.</p>
+          </div>
+        </div>
+        <div class="about-tag">Est. The moment chaos began 🐶</div>
+      </div>
+
+      <div class="about-text reveal" style="transition-delay:0.15s">
+        <div class="section-label">The Story</div>
+        <h2 class="section-title">Daily chaos,<br><em>honestly documented.</em></h2>
+        <p class="section-sub">
+          What started as just sharing cute dog moments turned into something much bigger — a daily window into what living with three unpredictable, lovable, absolutely unhinged dogs really looks like. No filters. No scripts. Just Hamachi, Salmon, Otoro, and whatever mayhem they've cooked up today.
+        </p>
+        <p class="section-sub" style="margin-top:16px;">
+          Every Short is a genuine moment. Funny because it actually happened. Relatable because if you have a dog, you already know.
+        </p>
+
+        <div class="about-stats">
+          <div class="about-stat">
+            <div class="about-stat-num">3</div>
+            <div class="about-stat-label">Dogs</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">∞</div>
+            <div class="about-stat-label">Chaos</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">0</div>
+            <div class="about-stat-label">Regrets</div>
+          </div>
+        </div>
+
+        <div style="margin-top:32px; display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="https://www.youtube.com/@hamachichaos" target="_blank" class="btn-primary">Watch on YouTube</a>
+          <a href="https://www.instagram.com/hamachichaos" target="_blank" class="btn-secondary">Follow on IG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       GALLERY
+  ============================================================ -->
+  <section id="gallery">
+    <div class="gallery-header">
+      <div class="section-label reveal">Photo Gallery</div>
+      <h2 class="section-title reveal">Caught <em>Being Cute</em></h2>
+      <p class="section-sub reveal" style="margin:0 auto;">
+        The rare calm moments between catastrophes.
+        <!-- Send more photos to fill these remaining slots! -->
+      </p>
+    </div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item reveal">
+        <div class="gallery-inner" style="background:none; padding:0;">
+          <img src="hamachi.jpg" alt="Hamachi" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;" />
+        </div>
+        <div class="gallery-overlay"><span class="gallery-caption">Hamachi — day one 🐾</span></div>
+      </div>
+      <div class="gallery-item reveal" style="transition-delay:0.05s">
+        <div class="gallery-inner">🐾</div>
+        <div class="gallery-overlay"><span class="gallery-caption">Caught in 4K</span></div>
+      </div>
+      <div class="gallery-item reveal" style="transition-delay:0.1s">
+        <div class="gallery-inner">🍣</div>
+        <div class="gallery-overlay"><span class="gallery-caption">Salmon pretending to be innocent</span></div>
+      </div>
+      <div class="gallery-item reveal" style="transition-delay:0.15s">
+        <div class="gallery-inner">😴</div>
+        <div class="gallery-overlay"><span class="gallery-caption">The 5 seconds of peace we get</span></div>
+      </div>
+      <div class="gallery-item reveal" style="transition-delay:0.2s">
+        <div class="gallery-inner">🤔</div>
+        <div class="gallery-overlay"><span class="gallery-caption">Otoro judging silently</span></div>
+      </div>
+      <div class="gallery-item reveal" style="transition-delay:0.25s">
+        <div class="gallery-inner">🎉</div>
+        <div class="gallery-overlay"><span class="gallery-caption">Treat time chaos</span></div>
+      </div>
+      <div class="gallery-item reveal" style="transition-delay:0.3s">
+        <div class="gallery-inner" style="background:none; padding:0;">
+          <img src="hamachi.jpg" alt="Hamachi fluffy" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;" />
+        </div>
+        <div class="gallery-overlay"><span class="gallery-caption">Who said you could sit here?</span></div>
+      </div>
+      <div class="gallery-item reveal" style="transition-delay:0.35s">
+        <div class="gallery-inner">🌸</div>
+        <div class="gallery-overlay"><span class="gallery-caption">Spring walk (briefly calm)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SOCIAL STRIP
+  ============================================================ -->
+  <section id="social">
+    <div class="social-strip reveal">
+      <a href="https://www.youtube.com/@hamachichaos" target="_blank" class="social-pill yt">
+        <svg viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+        YouTube
+      </a>
+      <a href="https://www.instagram.com/hamachichaos" target="_blank" class="social-pill ig">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Instagram
+      </a>
+      <a href="https://www.tiktok.com/@mama.of.triple.pa" target="_blank" class="social-pill tt">
+        <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        TikTok
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SUBSCRIBE CTA
+  ============================================================ -->
+  <section id="subscribe">
+    <span class="sub-emoji reveal">🐕</span>
+    <h2 class="sub-title reveal">Don't miss the <em>chaos.</em></h2>
+    <p class="sub-desc reveal">
+      New Shorts every single day. It's free. It's funny. And Hamachi needs you.
+    </p>
+    <div class="sub-actions reveal">
+      <a href="https://www.youtube.com/@hamachichaos?sub_confirmation=1" target="_blank" class="btn-white">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+        Subscribe on YouTube
+      </a>
+      <a href="https://www.instagram.com/hamachichaos" target="_blank" class="btn-ghost">
+        Follow on Instagram
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer>
+    <div class="footer-logo">Hamachi<span>.</span></div>
+    <p class="footer-copy">© 2025 Hamachi Being Hamachi. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="https://www.youtube.com/@hamachichaos" target="_blank">YouTube</a>
+      <a href="https://www.instagram.com/hamachichaos" target="_blank">Instagram</a>
+      <a href="https://www.tiktok.com/@mama.of.triple.pa" target="_blank">TikTok</a>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+    // ── Nav scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // ── Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    function closeMobile() {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    }
+    // Close mobile menu on outside click
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+        closeMobile();
+      }
+    });
+
+    // ── Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
